@@ -1,12 +1,19 @@
 import cv2 as cv
 import sys
 import numpy as np
+import argparse
 
 MEDIAN_KERNAL_SIZE = 7
 BILATERAL_KERNAL_SIZE = 12
 MAX_KERNEL_LENGTH = 31
 
-img = cv.imread(cv.samples.findFile(f"./slice.jpg"))
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--image", required=True, help="Path to the image")
+args = vars(ap.parse_args())
+
+img = cv.imread(args["image"])
+cv.imshow("image", img)
+
 if img is None:
     sys.exit("Could not read the image.")
 
