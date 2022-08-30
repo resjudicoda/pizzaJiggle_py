@@ -25,6 +25,7 @@ if img is None:
 img_org = img
 # convert to RGB
 img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+rgb_org = img
 # convert to channels first
 img = img.transpose((2, 0, 1))
 orig = torch.ByteTensor(img)
@@ -82,6 +83,7 @@ pizza_bool_masks = pizza_mask > proba_threshold
 #print(f"shape = {pizza_bool_masks.shape}, dtype = {pizza_bool_masks.dtype}")
 
 img_mask = pizza_bool_masks.squeeze(1).detach().numpy().transpose(1, 2, 0)
+# print("img_mask", img_mask)
 # There's an extra dimension (1) to the masks. We need to remove it
 pizza_bool_masks = pizza_bool_masks.squeeze(1)
 # this draws the mask on the original image
@@ -93,15 +95,11 @@ masked_output = draw_segmentation_masks(orig, pizza_bool_masks, alpha=0.7).numpy
 
 test = pizza_bool_masks.numpy().transpose(1, 2, 0)
 
-# for cropping, from stack overflow (https://stackoverflow.com/questions/40824245/how-to-crop-image-based-on-binary-mask)
-# def get_segment_crop(img,tol=0, mask=None):
-#     if mask is None:
-#         mask = img > tol
-#     return img[np.ix_(mask.any(1), mask.any(0))]
+# cropping, from stack overflow (https://stackoverflow.com/questions/40824245/how-to-crop-image-based-on-binary-mask)
 
-# get_segment_crop(output, mask=img_mask)
-
-src1_mask = np.float32(img_mask)
+#change mask to float - white pizza shape with black background
+float_mask = np.float32(img_mask)
+#create float of original image
 img_255 = img_org / 255
 image_mat = np.float32(img_255)
 
@@ -109,24 +107,12 @@ image_mat = np.float32(img_255)
 # print("src1_mask", src1_mask)
 # print("image mat", image_mat)
 
-src1_mask=cv.cvtColor(src1_mask,cv.COLOR_GRAY2BGR)#change mask to a 3 channel image 
+# #change mask to a 3 channel image - looks similar to float_mask
+src1_mask=cv.cvtColor(float_mask,cv.COLOR_GRAY2BGR)
+#subtract mask from image - yields only slice, but in blue tone 
 mask_out=cv.subtract(src1_mask, image_mat)
-mask_out=cv.subtract(src1_mask, mask_out)
+# returns image to original without crop
+final_mask_out=cv.subtract(src1_mask, mask_out)
 
-# for image cropping, not working
-# for h in range(len(img_mask)):
-#     for w in range(len(img_mask)):
-#         if img_mask[h][w][0] == 0:
-#             for i in range(3):
-#                 img_org[h][w][i] = 0
-#         else:
-#             continue
-#this wasnt working either
-#masked = cv.bitwise_and(img_org, img_org, img_mask)
-# cv.imshow("image", img_org)
-# cv.waitKey()       
-# plt.imshow(img_org)
-
-# cv.imshow("image", src1_mask)
 cv.imshow("image", mask_out)
 cv.waitKey()

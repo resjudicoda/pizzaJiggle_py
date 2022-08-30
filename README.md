@@ -5,3 +5,8 @@ This is version two of one of my personal projects. As of now, it consists of tw
 Special thanks to the following article for providing a baseline for me to work out my own cartoonify feature.
 
 https://stacks.stanford.edu/file/druid:yt916dh6570/Dade_Toonify.pdf
+
+##Note: The scripts currently run via the following shell commands:
+
+Cartoonify: "python cartoonify/cartoonify.py -i ./images/slice.jpg"
+Object Detection: "python object_detect/object_detect.py -i ./images/slice.jpg"
