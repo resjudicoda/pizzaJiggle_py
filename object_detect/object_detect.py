@@ -6,6 +6,7 @@ import torch
 import cv2 as cv
 import argparse
 import matplotlib.pyplot as plt
+import os
 
 maskrcnn = detection.maskrcnn_resnet50_fpn
 retinanet = detection.retinanet_resnet50_fpn
@@ -58,32 +59,19 @@ inst_classes = [
 
 
 inst_class_to_idx = {cls: idx for (idx, cls) in enumerate(inst_classes)}
-#print(f"inst_class_to_idx: {inst_class_to_idx}")
 # find the index number of the pizza label
 pizza_index = inst_class_to_idx['pizza']
 
-# print("For the image, the following instances were detected:")
-# print([inst_classes[label] for label in output['labels']])
-# print("The labels are as follows:")
-# print(output['labels'])
-# print("The scores are as follows:")
-# print(output['scores'])
-# print(f"The pizza index is: {pizza_index}")
-
 pizza_mask = output['masks'][output['labels'] == pizza_index]
-# print(f"shape = {pizza_masks.shape}, dtype = {pizza_masks.dtype}, "
-#       f"min = {pizza_masks.min()}, max = {pizza_masks.max()}")
 
 proba_threshold = 0.5
 score_threshold = .75
-
-#pizza_bool_masks = output['masks'][output['scores'] > score_threshold]  > proba_threshold
 
 # select for masks that meet the proba threshold and match the pizza_index
 pizza_bool_masks = pizza_mask > proba_threshold
 
 img_mask = pizza_bool_masks.squeeze(1).detach().numpy().transpose(1, 2, 0)
-# print("img_mask", img_mask)
+
 # There's an extra dimension (1) to the masks. We need to remove it
 pizza_bool_masks = pizza_bool_masks.squeeze(1)
 # this draws the mask on the original image
@@ -104,8 +92,14 @@ mask_out=cv.subtract(src1_mask, image_mat)
 # returns image to original without crop
 final_mask_out=cv.subtract(src1_mask, mask_out)
 
-# multiplying the image by the mask works
+# multiplying the image by the mask works to crop the image
 x_mask_out = image_mat * src1_mask
+print("x_mask_out", type(x_mask_out), x_mask_out.ndim, x_mask_out.shape)
+
+# directory = r'/Users/adamreis/Coding/pizzaJiggle_py/images'
+# os.chdir(directory)
+# filename = 'savedImage.png'
+# cv.imwrite(filename, x_mask_out)
 
 cv.imshow("image", x_mask_out)
 cv.waitKey()
