@@ -20,6 +20,7 @@ model = maskrcnn(pretrained=True, progress=False)
 model = model.eval()
 
 img = cv.imread(args["image"])
+
 if img is None:
     sys.exit("Could not read the image.")
 img_org = img
@@ -80,7 +81,6 @@ score_threshold = .75
 
 # select for masks that meet the proba threshold and match the pizza_index
 pizza_bool_masks = pizza_mask > proba_threshold
-#print(f"shape = {pizza_bool_masks.shape}, dtype = {pizza_bool_masks.dtype}")
 
 img_mask = pizza_bool_masks.squeeze(1).detach().numpy().transpose(1, 2, 0)
 # print("img_mask", img_mask)
@@ -88,12 +88,6 @@ img_mask = pizza_bool_masks.squeeze(1).detach().numpy().transpose(1, 2, 0)
 pizza_bool_masks = pizza_bool_masks.squeeze(1)
 # this draws the mask on the original image
 masked_output = draw_segmentation_masks(orig, pizza_bool_masks, alpha=0.7).numpy().transpose(1, 2, 0)
-
-
-# trying to use the mask to crop the image
-#img_mask = pizza_mask.squeeze(1).detach().numpy().transpose(1, 2, 0)
-
-test = pizza_bool_masks.numpy().transpose(1, 2, 0)
 
 # cropping, from stack overflow (https://stackoverflow.com/questions/40824245/how-to-crop-image-based-on-binary-mask)
 
@@ -103,10 +97,6 @@ float_mask = np.float32(img_mask)
 img_255 = img_org / 255
 image_mat = np.float32(img_255)
 
-# print("pizza bool masks", pizza_bool_masks)
-# print("src1_mask", src1_mask)
-# print("image mat", image_mat)
-
 # #change mask to a 3 channel image - looks similar to float_mask
 src1_mask=cv.cvtColor(float_mask,cv.COLOR_GRAY2BGR)
 #subtract mask from image - yields only slice, but in blue tone 
@@ -114,5 +104,8 @@ mask_out=cv.subtract(src1_mask, image_mat)
 # returns image to original without crop
 final_mask_out=cv.subtract(src1_mask, mask_out)
 
-cv.imshow("image", mask_out)
+# multiplying the image by the mask works
+x_mask_out = image_mat * src1_mask
+
+cv.imshow("image", x_mask_out)
 cv.waitKey()
