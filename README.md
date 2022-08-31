@@ -1,6 +1,6 @@
 # pizzaJiggle_py
 
-This is version two of one of my personal projects. As of now, it consists of two Python scripts: one that uses PyTorch to detect pizza and OpenCV to crop the image based on the mask created by PyTorch; and one that uses OpenCV to apply a "cartoonify" effect to an image.
+This is version two of one of my personal projects. As of now, it consists of two Python scripts: one that uses PyTorch/OpenCV to detect pizza and crop it out of the image; and one that uses OpenCV to apply a "cartoonify" effect to an image.
 
 I am working on a third script to animate the output image, as well as the main script to connect everything together.
 
