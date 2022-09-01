@@ -1,10 +1,13 @@
+from jiggle.jiggle import vertical_waves
 import numpy as np
 import cv2 as cv
 import argparse
 import os
+import imageio
 
-from object_detect.object_detect import *
+from object_detect_and_crop.object_detect_and_crop import *
 from cartoonify.cartoonify import cartoonify
+from jiggle.jiggle import *
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True, help="Path to the image")
@@ -24,14 +27,42 @@ tooned = cartoonify(img)
 # crop tooned image
 cropped = crop(tooned, mask)
 
-# change black background to white
-# test[np.where((test==[0,0,0]).all(axis=2))] = [255,255,255]
+# optional change black background to white
+# cropped[np.where((cropped==[0,0,0]).all(axis=2))] = [255,255,255]
 
-# delete black background
+# optional delete black background
 # test = delete_black_background(cropped)
 
 # jiggle
+# outputs a gif
+# create a version of the cropped image with vertical waves
+wavy = vertical_waves(cropped)
 
-# display it
-cv.imshow("image", cropped)
-cv.waitKey()
+# convert bgr to rgb for imageio
+cropped_rgb = cv.cvtColor(cropped, cv.COLOR_BGR2RGB)
+wavy_rgb = cv.cvtColor(wavy, cv.COLOR_BGR2RGB)
+
+# convert images from float32 to uint8 for imageio
+def normalize8(I):
+  mn = I.min()
+  mx = I.max()
+
+  mx -= mn
+
+  I = ((I - mn)/mx) * 255
+  return I.astype(np.uint8)
+
+cropped_rgb_uint8 = normalize8(cropped_rgb)
+wavy_rgb_uint8 = normalize8(wavy_rgb)
+
+# append regular and wavy image to list
+image_list = []
+image_list.append(cropped_rgb_uint8)
+image_list.append(wavy_rgb_uint8)
+# create gif using images list
+imageio.mimwrite('animated_from_images.gif', image_list)
+
+
+# display image if needed
+# cv.imshow("image", wavy)
+# cv.waitKey()
