@@ -6,6 +6,6 @@ Special thanks to the following article for providing a baseline for me to work 
 
 https://stacks.stanford.edu/file/druid:yt916dh6570/Dade_Toonify.pdf
 
-##Note: Currently runs via the following shell command:
+##Note: Currently runs in an Anaconda environment via the following shell command:
 
 "python pizza_jiggle.py -i ./images/slice.jpg"
