@@ -12,3 +12,5 @@ https://stacks.stanford.edu/file/druid:yt916dh6570/Dade_Toonify.pdf
 
 Cartoonify: "python cartoonify/cartoonify.py -i ./images/slice.jpg"
 Object Detection: "python object_detect/object_detect.py -i ./images/slice.jpg"
+
+python pizza_jiggle.py -i ./images/slice.jpg
