@@ -7,16 +7,6 @@ MEDIAN_KERNAL_SIZE = 7
 BILATERAL_KERNAL_SIZE = 12
 MAX_KERNEL_LENGTH = 31
 
-# ap = argparse.ArgumentParser()
-# ap.add_argument("-i", "--image", required=True, help="Path to the image")
-# args = vars(ap.parse_args())
-
-# img = cv.imread(args["image"])
-# cv.imshow("image", img)
-
-# if img is None:
-#     sys.exit("Could not read the image.")
-
 def cartoonify(img):
 
     # step 1: blur and detect edges
@@ -62,7 +52,3 @@ def cartoonify(img):
     #     median_edges_downsized, upsize_dim, interpolation=cv.INTER_AREA)
     return final_toon
 
-# final_toon = cartoonify(img)
-# cv.imshow('Median/Upsized', final_toon)
-# # Wait until user press some key
-# cv.waitKey()
